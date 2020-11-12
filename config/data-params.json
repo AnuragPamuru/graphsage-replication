@@ -1,0 +1,6 @@
+{
+  "d1_address" : "data/raw/cora.content",
+  "d2_address" : "data/raw/cora.cites",
+  "keys_address" : "data/raw/cora.content",
+  "num_epochs" : 500
+}
