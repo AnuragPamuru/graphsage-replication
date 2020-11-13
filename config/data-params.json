@@ -1,6 +1,6 @@
 {
-  "d1_address" : "data/raw/cora.content",
-  "d2_address" : "data/raw/cora.cites",
-  "keys_address" : "data/raw/cora.content",
-  "num_epochs" : 500
+  "feature_address" : "data/raw/cora.content",
+  "edges_address" : "data/raw/cora.cites",
+  "encoding" : [{"column" : 1434, "encoding_types" : "one_hot"}],  
+  "directed" : true
 }
