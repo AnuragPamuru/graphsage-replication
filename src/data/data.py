@@ -36,23 +36,20 @@ def get_adj(edges, directed):
     adj = np.zeros((n_nodes, n_nodes), dtype='float32')
 
     for i in range(len(edges)):
-        if directed:
-            adj[node_index[rows[i]], node_index[cols[i]]]  = 1.0
-        else:
-            adj[node_index[rows[i]], node_index[cols[i]]]  = 1.0 
+        adj[node_index[rows[i]], node_index[cols[i]]]  = 1.0
+        if not directed: 
             adj[node_index[cols[i]], node_index[rows[i]]]  = 1.0 
+            
     return adj
 
 def get_data(feature_address, edges_address, encoding_config, directed):
     features = pd.read_csv(feature_address, sep ='\t', header=None)
     edges = pd.read_csv(edges_address, sep ='\t', header=None)
 
-    index = features[0]
-    n_papers = len(features)
-    
     adj = get_adj(edges, directed)
     
     encoded_labels = encode(features, encoding_config)
+    
     #add identity matrix to adjacency matrix
     adj_added = adj + np.eye(adj.shape[0])
 
