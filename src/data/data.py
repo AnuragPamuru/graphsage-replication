@@ -18,6 +18,7 @@ def encode(features, encoding_config):
         encoder_col = features[encoding_instruction["column"]]
         if encoding_instruction["encoding_types"] == "one_hot":
             encoder_col = encode_onehot(encoder_col)
+            features.drop(encoding_instruction["column"], axis = 1)
         encoded_data.append(encoder_col)
     return encoded_data if len(encoded_data) > 1 else encoded_data[0]
 
@@ -46,8 +47,10 @@ def get_data(feature_address, edges_address, encoding_config, directed):
     features = pd.read_csv(feature_address, sep ='\t', header=None)
     edges = pd.read_csv(edges_address, sep ='\t', header=None)
 
+    #adjacency matrix
     adj = get_adj(edges, directed)
     
+    #encoding
     encoded_labels = encode(features, encoding_config)
     
     #add identity matrix to adjacency matrix
@@ -64,7 +67,7 @@ def get_data(feature_address, edges_address, encoding_config, directed):
     adj_hat[adj_hat > 0.0001] = adj_hat[adj_hat > 0.0001] - 0.2
 
     #put numpy arrays to tensors
-    features = np.array(features.iloc[:, 1:1434])
+    features = np.array(features.iloc[:, 1:features.shape[1]-1])
     features = torch.FloatTensor(features)
     labels = torch.LongTensor(np.where(encoded_labels)[1])
 
