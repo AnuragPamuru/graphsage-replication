@@ -25,22 +25,22 @@ def get_adj(edges, directed):
     rows = edges[0]
     cols = edges[1]
     
-    index = list(set(edges[0]).union(set(edges[1])))
-    n_papers = len(index)
+    nodes = list(set(edges[0]).union(set(edges[1])))
+    n_nodes = len(nodes)
     
-    id2index = {}
-    for i in np.arange(len(index)):
-        id2index[index[i]] = i
+    node_index = {}
+    for i in np.arange(len(nodes)):
+        node_index[nodes[i]] = i
         i += 1
     
-    adj = np.zeros((n_papers, n_papers), dtype='float32')
+    adj = np.zeros((n_nodes, n_nodes), dtype='float32')
 
     for i in range(len(edges)):
         if directed:
-            adj[id2index[rows[i]], id2index[cols[i]]]  = 1.0
+            adj[node_index[rows[i]], node_index[cols[i]]]  = 1.0
         else:
-            adj[id2index[rows[i]], id2index[cols[i]]]  = 1.0 
-            adj[id2index[cols[i]], id2index[rows[i]]]  = 1.0 
+            adj[node_index[rows[i]], node_index[cols[i]]]  = 1.0 
+            adj[node_index[cols[i]], node_index[rows[i]]]  = 1.0 
     return adj
 
 def get_data(feature_address, edges_address, encoding_config, directed):
