@@ -35,13 +35,17 @@ def test_model(model, idx_test, adj_hat, features, labels):
 
 def main():
     #load config data
-    configs = json.load(open("config/data-params.json"))
-    print(configs)
+    data_configs = json.load(open("config/data-params.json"))
+    print(data_configs)
+    
+    model_configs = json.load(open("config/model-params.json"))
+    print(model_configs)
     
     #load cora data
-    features, labels, adj = get_data(configs["d1_address"],
-                                     configs["d2_address"],
-                                     configs["keys_address"])
+    features, labels, adj = get_data(data_configs["feature_address"],
+                                     data_configs["edges_address"],
+                                     data_configs["encoding"],
+                                     data_configs["directed"])
 
     #initialize models
     models = [Fully1Net(), Fully2Net(), Graph1Net(), Graph2Net()]
@@ -55,7 +59,7 @@ def main():
     #train and test all the models and report losses and accuracy
     num_epochs = 500
     for i in range(len(models)):
-        for epoch in range(configs["num_epochs"]):
+        for epoch in range(model_configs["num_epochs"]):
             train_model(models[i], ops[i], epoch, idx_train, adj, features, labels)
         test_model(models[i], idx_test, adj, features, labels)
 if __name__ == '__main__':
