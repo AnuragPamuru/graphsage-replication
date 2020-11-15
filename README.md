@@ -1,4 +1,4 @@
-# replication-checkpoint-1
+# replication-checkpoint-2
  Project Group: Dylan Loe, Anurag Pamuru, Mengyuan Shi
 
 This repository contains a data science project that builds GCNs using a generalizable embedding framework called GraphSAGE that simultaneously encodes the structure of a node's neighborhood and the distribution of features within it. It can also be applied to graphs without node features. We use the Cora dataset which is suitable for our given application because its graph has sparse and high-dimensional but meaningful connections that we can compress down to a low-dimensional embedding.
