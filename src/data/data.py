@@ -58,17 +58,9 @@ def get_data(feature_address, edges_address, encoding_config, directed):
 
     A = torch.from_numpy(adj_added).float()
 
-    # Normalization as per (Kipf & Welling, ICLR 2017)
-    D = A.sum(1)  # nodes degree (N,)
-    D_hat = (D + 1e-5) ** (-0.5)
-    adj_hat = D_hat.view(-1, 1) * A * D_hat.view(1, -1)  # N,N
-
-    # Some additional trick I found to be useful
-    adj_hat[adj_hat > 0.0001] = adj_hat[adj_hat > 0.0001] - 0.2
-
     #put numpy arrays to tensors
     features = np.array(features.iloc[:, 1:features.shape[1]-1])
     features = torch.FloatTensor(features)
     labels = torch.LongTensor(np.where(encoded_labels)[1])
 
-    return features, labels, adj_hat
+    return features, labels, A
