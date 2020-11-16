@@ -73,10 +73,14 @@ def main():
                                      data_configs["encoding"],
                                      data_configs["directed"])
 
+    #train and test all the models and report losses and accuracy
+    num_epochs = model_configs["num_epochs"]
+    learning_rate = model_configs["learning_rate"]
+    num_hidden = model_configs["num_hidden"]
+    
     #initialize models
     in_features = list(features.size())[0]
     num_classes = len(set(labels))
-    num_hidden = 128
     models = [Fully1Net(in_features, num_classes), 
               Fully2Net(in_features, num_hidden, num_classes), 
               Graph1Net(in_features, num_classes), 
@@ -86,16 +90,12 @@ def main():
     #split for train and test sets
     idx_train = torch.LongTensor(range(1000))
     idx_test = torch.LongTensor(range(1000, 1433))
-
-    #train and test all the models and report losses and accuracy
-    num_epochs = model_configs["num_epochs"]
-    learning_rate = 1e-3
     
     #initialize optimizers
     ops = [optim.Adam(model.parameters(), lr=learning_rate) for model in models]
     
     LPA_model = GCNLPA(features.shape[1],
-                       128,
+                       num_hidden,
                        num_classes,
                        adj)
     optimizer = optim.Adam(LPA_model.parameters(), lr=learning_rate)
