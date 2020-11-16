@@ -18,7 +18,7 @@ The configurations for this program are stored in 'data-params.json', which is s
   "d1_address" : "data/raw/cora.content",
   "d2_address" : "data/raw/cora.cites",
   "keys_address" : "data/raw/cora.content",
-  "num_epochs" : 500
+  "num_epochs" : 50
 }
 ```
 
