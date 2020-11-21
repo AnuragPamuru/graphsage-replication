@@ -36,13 +36,11 @@ class GraphConvolution(nn.Module):
 
         # Some additional trick I found to be useful
         adj_hat[adj_hat > 0.0001] = adj_hat[adj_hat > 0.0001] - 0.2
-        
-        print(input.size())
-        print(self.weight.size())
-            
-        support = torch.mm(input, self.weight)
-        support = torch.transpose(support, 0, 1)
-        output = torch.mm(adj_hat, support)
+
+        #A * X * W
+        output = torch.mm(adj_hat, input)
+        output = torch.mm(output, self.weight)
+
         if self.bias is not None:
             return output + self.bias
         else:
@@ -72,7 +70,7 @@ class GCNLPAConv(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, x, adj, y):
-        adj = adj.to_dense()
+        y = y.view(len(y), 1).float()
         # W * x
         support = torch.mm(x, self.weight)
         # Hadamard Product: A' = Hadamard(A, M)
@@ -83,10 +81,11 @@ class GCNLPAConv(nn.Module):
         # output = D^-1 * A' * X * W
         output = torch.mm(adj, support)
         # y' = D^-1 * A' * y
+        print("D^-1 * A':", adj.size())
+        print("y:", y.size())
         y_hat = torch.mm(adj, y)
 
         if self.bias is not None:
             return output + self.bias, y_hat
         else:
             return output, y_hat
-        
