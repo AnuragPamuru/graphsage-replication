@@ -1,6 +1,6 @@
 from src.models.models import *
 from src.data.data import *
-import argparse
+import sys
 import json
 
 def accuracy(output, labels):
@@ -60,18 +60,25 @@ def test_model(model, idx_test, adj_hat, features, labels):
 
 
 def main():
-    #load config data
-    data_configs = json.load(open("config/data-params.json"))
-    print(data_configs)
+    if(len(sys.argv)==2 and sys.argv[1] == "test"):
+        print("Testing mode...")
+        
+        #load test data
+        features, labels, adj = get_data("test/testdata/test.content",
+                                         "test/testdata/test.cites")
+    else:
+        #load config data
+        data_configs = json.load(open("config/data-params.json"))
+        print(data_configs)
+
+        #load cora data
+        features, labels, adj = get_data(data_configs["feature_address"],
+                                         data_configs["edges_address"],
+                                         data_configs["encoding"],
+                                         data_configs["directed"])
 
     model_configs = json.load(open("config/model-params.json"))
     print(model_configs)
-
-    #load cora data
-    features, labels, adj = get_data(data_configs["feature_address"],
-                                     data_configs["edges_address"],
-                                     data_configs["encoding"],
-                                     data_configs["directed"])
 
     #train and test all the models and report losses and accuracy
     num_epochs = model_configs["num_epochs"]
@@ -87,10 +94,9 @@ def main():
               Graph1Net(in_features_1, num_hidden, num_classes),
               Graph2Net(in_features_1, num_hidden, num_classes)]
 
-
     #split for train and test sets
-    idx_train = torch.LongTensor(range(1000))
-    idx_test = torch.LongTensor(range(1000, 1433))
+    idx_train = torch.LongTensor(range(int(in_features_1 * 0.75)))
+    idx_test = torch.LongTensor(range(int(in_features_1 * 0.75), in_features_1))
 
     #initialize optimizers
     ops = [optim.Adam(model.parameters(), lr=learning_rate) for model in models]

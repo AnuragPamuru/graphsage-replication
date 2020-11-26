@@ -70,7 +70,6 @@ class GCNLPAConv(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, x, adj, y):
-        y = y.view(len(y), 1).float()
         # W * x
         support = torch.mm(x, self.weight)
         # Hadamard Product: A' = Hadamard(A, M)
@@ -81,8 +80,6 @@ class GCNLPAConv(nn.Module):
         # output = D^-1 * A' * X * W
         output = torch.mm(adj, support)
         # y' = D^-1 * A' * y
-        print("D^-1 * A':", adj.size())
-        print("y:", y.size())
         y_hat = torch.mm(adj, y)
 
         if self.bias is not None:

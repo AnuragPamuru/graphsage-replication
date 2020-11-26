@@ -22,7 +22,7 @@ def encode(features, encoding_config):
         encoded_data.append(encoder_col)
     return encoded_data if len(encoded_data) > 1 else encoded_data[0]
 
-def get_adj(edges, directed):    
+def get_adj(edges, directed):
     rows = edges[0]
     cols = edges[1]
     
@@ -43,7 +43,7 @@ def get_adj(edges, directed):
             
     return adj
 
-def get_data(feature_address, edges_address, encoding_config, directed):
+def get_data(feature_address, edges_address, encoding_config = None, directed = False):
     features = pd.read_csv(feature_address, sep ='\t', header=None)
     edges = pd.read_csv(edges_address, sep ='\t', header=None)
 
@@ -51,7 +51,7 @@ def get_data(feature_address, edges_address, encoding_config, directed):
     adj = get_adj(edges, directed)
     
     #encoding
-    encoded_labels = encode(features, encoding_config)
+    encoded_labels = features if encoding_config == None else encode(features, encoding_config)
     
     #add identity matrix to adjacency matrix
     adj_added = adj + np.eye(adj.shape[0])
