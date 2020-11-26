@@ -60,7 +60,8 @@ def test_model(model, idx_test, adj_hat, features, labels):
 
 
 def main():
-    if(len(sys.argv)==2 and sys.argv[1] == "test"):
+    testing_mode = len(sys.argv)==2 and sys.argv[1] == "test"
+    if(testing_mode):
         print("Testing mode...")
         
         #load test data
@@ -109,15 +110,16 @@ def main():
         test_model(models[i], idx_test, adj, features, labels)
 
     #GCN-LPA
-    LPA_model = GCNLPA(features.shape[1],
-                       num_hidden,
-                       num_classes,
-                       adj)
+    if not testing_mode:
+        LPA_model = GCNLPA(features.shape[1],
+                           num_hidden,
+                           num_classes,
+                           adj)
 
-    optimizer = optim.Adam(LPA_model.parameters(), lr=learning_rate)
+        optimizer = optim.Adam(LPA_model.parameters(), lr=learning_rate)
 
-    for epoch in range(num_epochs):
-        train_GCN_LPA(LPA_model, optimizer, epoch, idx_train, adj, features, labels)
-    test_model(LPA_model, idx_test, adj, features, labels)
+        for epoch in range(num_epochs):
+            train_GCN_LPA(LPA_model, optimizer, epoch, idx_train, adj, features, labels)
+        test_model(LPA_model, idx_test, adj, features, labels)
 if __name__ == '__main__':
     main()
