@@ -1,4 +1,8 @@
+from ogb.nodeproppred import NodePropPredDataset
+from scipy.sparse import identity
+from scipy.sparse import coo_matrix
 import numpy as np
+import networkx as nx
 import pandas as pd
 import torch
 
@@ -44,23 +48,48 @@ def get_adj(edges, directed):
     return adj
 
 def get_data(feature_address, edges_address, encoding_config = None, directed = False):
-    features = pd.read_csv(feature_address, sep ='\t', header=None)
-    edges = pd.read_csv(edges_address, sep ='\t', header=None)
+    if feature_address == 'arxiv':
+        d = NodePropPredDataset('ogbn-arxiv', root='/datasets/ogb/ogbn-arxiv')
+        graph, labels = d[0]
+        labels = np.ravel(labels)
+        edges = list(zip(graph["edge_index"][0], graph["edge_index"][1]))
+        G = nx.DiGraph(edges)
+        adj = nx.adjacency_matrix(G)
+    else:
+        features = pd.read_csv(feature_address, sep ='\t', header=None)
+        edges = pd.read_csv(edges_address, sep ='\t', header=None)
 
-    #adjacency matrix
-    adj = get_adj(edges, directed)
+        #adjacency matrix
+        adj = get_adj(edges, directed)
+        
+        #encoding
+        encoded_labels = features if encoding_config == None else encode(features, encoding_config)
     
-    #encoding
-    encoded_labels = features if encoding_config == None else encode(features, encoding_config)
-    
-    #add identity matrix to adjacency matrix
-    adj_added = adj + np.eye(adj.shape[0])
-
-    A = torch.from_numpy(adj_added).float()
-
     #put numpy arrays to tensors
-    features = np.array(features.iloc[:, 1:features.shape[1]-1])
-    features = torch.FloatTensor(features)
-    labels = torch.LongTensor(np.where(encoded_labels)[1])
+    if feature_address == 'arxiv' and torch.cuda.is_available():
+        device = torch.device('cuda')
+        features = torch.FloatTensor(graph["node_feat"]).cuda().to(device)
+        labels = torch.LongTensor(labels).cuda().to(device)
+        
+        adj_added = coo_matrix(adj + identity(adj.shape[0]))
+        
+        #add identity matrix to adjacency matrix
+        values = adj_added.data
+        indices = np.vstack((adj_added.row, adj_added.col))
 
+        i = torch.LongTensor(indices)
+        v = torch.FloatTensor(values)
+        shape = adj_added.shape
+
+        A = torch.sparse.FloatTensor(i, v, torch.Size(shape))
+    else:
+        features = np.array(features.iloc[:, 1:features.shape[1]-1])
+        features = torch.FloatTensor(features)
+        labels = torch.LongTensor(np.where(encoded_labels)[1])
+        
+        #add identity matrix to adjacency matrix
+        adj_added = adj + np.eye(adj.shape[0])
+
+        A = torch.from_numpy(adj_added).float()
+    
     return features, labels, A
