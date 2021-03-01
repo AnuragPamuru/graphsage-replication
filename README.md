@@ -30,7 +30,7 @@ Each of the following variables are described here:
 
 ### Responsibilities
 
-_Anurag_ was responsible for building parts of run.py, configs, and setting up the GitHub.
+_Anurag_ was responsible for building parts of run.py, data.py, configs, the report/write-up, and setting up the GitHub.
 
 _Dylan_ was responsible for working on run.py, data.py, model.py, 
 and the report/write-up.
