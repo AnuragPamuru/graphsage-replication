@@ -37,4 +37,6 @@ and the report/write-up.
 
 _Mengyuan_ was responsible for working on most of the report/write-up and also the README for the GitHub.
 
-	
+### Citations
+- https://github.com/Vimalakirti/GCN-LPA-PyTorch
+- https://github.com/hwwang55/GCN-LPA/tree/master/src
